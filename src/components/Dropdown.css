@@ -1,0 +1,27 @@
+.dropdown {
+  position: relative;
+}
+
+.options {
+  position: absolute;
+  width: 100%;
+  max-height: 200px;
+  overflow: hidden;
+  overflow-y: scroll;
+  background-color: #fff;
+  border: 1px solid silver;
+  border-radius: 5px;
+  display: none;
+}
+.options.open {
+  display: block;
+}
+
+.option {
+  padding: 5px 10px;
+  cursor: pointer;
+  transition: 0.2s background-color;
+}
+.option:hover {
+  background-color: silver;
+}
