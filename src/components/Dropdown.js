@@ -18,7 +18,7 @@ const Dropdown = ({inputValue, setInputValue}) => {
              onBlur={() => setIsOpen(prev => !prev)}
              onChange={e => setInputValue(e.target.value)}
       />
-      <div className={isOpen ? 'options open' : 'options'}>
+      <div className={(isOpen && filterCountries(countries).length) ? 'options open' : 'options'}>
         {filterCountries(countries).map(option => (
           <div className='option' key={option.name} onMouseDown={() => setInputValue(option.name)}>{option.name}</div>
         ))}

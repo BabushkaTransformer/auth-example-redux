@@ -1,66 +1,58 @@
-import {useState} from "react";
-import {createUserWithEmailAndPassword, onAuthStateChanged, signInWithEmailAndPassword} from "firebase/auth";
-import {auth} from "./firebase";
 import Profile from "./components/Profile";
 import './App.css';
+import {useDispatch, useSelector} from "react-redux";
+import {checkUserAuth, signIn, signUp} from "./store/slices/auth";
+import {useEffect, useState} from "react";
 
 
 function App() {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [user, setUser] = useState(null);
-  const [errorMessage, setErrorMessage] = useState("");
+  const {isAuth, errorMessage, loading} = useSelector(state => state.auth);
+  const dispatch = useDispatch();
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
 
 
-  onAuthStateChanged(auth, (currentUser) => {
-    setUser(currentUser);
-  })
-
-  const signUp = async (e) => {
+  useEffect(() => {
+    dispatch(checkUserAuth());
+  }, [dispatch]);
+  const signUpHandler = (e) => {
     e.preventDefault();
-    try {
-      await createUserWithEmailAndPassword(auth, email, password);
-      setErrorMessage('');
-    } catch (error) {
-      setErrorMessage(error.message)
-    }
+    dispatch(signUp({email, password}));
   }
-
-  const signIn = async (e) => {
+  const signInHandler = (e) => {
     e.preventDefault();
-    try {
-      await signInWithEmailAndPassword(auth, email, password);
-      setErrorMessage('');
-    } catch (error) {
-      setErrorMessage(error.message)
-    }
+    dispatch(signIn({email, password}));
   }
 
   return (
     <div className="App">
-      {!user ? (
-          <form className="from">
-            <span style={{color: 'red', marginBottom: '10px'}}>{errorMessage}</span>
-            <div className="input">
-              <label htmlFor='login'>Email</label>
-              <input type='email'
-                     id='login'
-                     placeholder='email'
-                     onChange={(e) => setEmail(e.target.value)}/>
-            </div>
-            <div className="input">
-              <label htmlFor='password'>Пароль</label>
-              <input type='password'
-                     id='password'
-                     placeholder='password'
-                     onChange={(e) => setPassword(e.target.value)}/>
-            </div>
-            <button onClick={signUp}>Регистрация</button>
-            <button onClick={signIn}>Войти</button>
-          </form>
-        ) :
-        <Profile user={user}/>
+      {loading ? <div>asdfdsaf</div>
+        : <div>{!isAuth ? (
+            <form className="from">
+              <span style={{color: 'red', marginBottom: '10px'}}>{errorMessage}</span>
+              <div className="input">
+                <label htmlFor='login'>Email</label>
+                <input type='email'
+                       id='login'
+                       placeholder='email'
+                       onChange={(e) => setEmail(e.target.value)}/>
+              </div>
+              <div className="input">
+                <label htmlFor='password'>Пароль</label>
+                <input type='password'
+                       id='password'
+                       placeholder='password'
+                       autoComplete="on"
+                       onChange={(e) => setPassword(e.target.value)}/>
+              </div>
+              <button onClick={(e) => signUpHandler(e)}>Регистрация</button>
+              <button onClick={(e) => signInHandler(e)}>Войти</button>
+            </form>
+          ) :
+          <Profile/>
+        }</div>
       }
+
     </div>
   );
 }
